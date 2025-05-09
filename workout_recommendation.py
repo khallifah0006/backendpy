@@ -5,11 +5,18 @@ import warnings
 from collections import Counter
 import json
 import os
+from flask_cors import CORS  # Import Flask-CORS
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
+
+# Optional: For more granular control
+# CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Calculate BMI and determine category
 def calculate_bmi_category(weight, height):
@@ -432,9 +439,19 @@ def recommend_workout():
         }
         return jsonify(error_response), 400
 
+# Add preflight route for CORS
+@app.route('/api/recommend', methods=['OPTIONS'])
+def recommend_options():
+    return '', 200
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "ok"})
+
+# Add preflight route for CORS
+@app.route('/api/health', methods=['OPTIONS'])
+def health_options():
+    return '', 200
 
 # Add a simple index route for the root path
 @app.route('/', methods=['GET'])
